@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  compiler-flags-app:
+    image: python:3.11-slim
+    container_name: compiler_flags_app
+
+    working_dir: /app
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "8501:8501"
+
+    command: >
+      bash -c "
+      pip install --upgrade pip &&
+      pip install -r requirements.txt &&
+      streamlit run app.py --server.address=0.0.0.0
+      "
