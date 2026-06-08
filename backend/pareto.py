@@ -1,13 +1,6 @@
 import numpy as np
 
 def pareto_front(points: dict):
-    """
-    points = {
-        "combo_1": [score1, score2, ...],
-        "combo_2": [score1, score2, ...]
-    }
-    """
-
     keys = list(points.keys())
     values = np.array(list(points.values()))
 

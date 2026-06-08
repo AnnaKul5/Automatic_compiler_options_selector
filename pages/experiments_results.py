@@ -30,7 +30,7 @@ if "criteria_settings" not in st.session_state:
     st.session_state.criteria_settings = {}
 
 if "criteria" not in st.session_state:
-    st.session_state.criteria = ["Score"]
+    st.session_state.criteria = ["IPC"]
 
 # 1. Кнопка добавления критерия с настройками
 col_add, col_del = st.columns(2)
@@ -45,10 +45,10 @@ with col_add:
         with col_rank:
             new_criterion_rank_type = st.radio(
                 "Тип ранжирования:",
-                ["По возрастанию (ascending)", "По убыванию (descending)"],
+                ["Минимизировать", "Максимизировать"],
                 index=1,
                 key="new_criterion_rank_type",
-                help="ascending: меньшие значения лучше\n descending: большие значения лучше"
+                help="Минимизироват. Например, время выполения программы\n Максимизировать. Например, производительность, IPC"
             )
         
         with col_alpha:
@@ -65,7 +65,7 @@ with col_add:
                 st.session_state.criteria.append(new_criterion.strip())
                 
                 # Сохраняем настройки критерия
-                rank_type_value = "descending" if "убыванию" in new_criterion_rank_type else "ascending"
+                rank_type_value = "ascending" if "Минимизировать" in new_criterion_rank_type else "descending"
                 
                 # Валидация уровня доверия
                 alpha_value = 0.05
@@ -143,10 +143,9 @@ if st.session_state.criteria:
                 
                 updated_rank_type = st.radio(
                     "Тип ранжирования:",
-                    ["По возрастанию (ascending)", "По убыванию (descending)"],
-                    index=current_rank_index,
+                    ["Минимизировать", "Максимизировать"],
+                    index=0 if current_rank_type == "ascending" else 1,
                     key=f"rank_{crit}",
-                    help="ascending: меньшие значения лучше\n descending: большие значения лучше"
                 )
             
             with col_set2:
@@ -339,10 +338,6 @@ if uploaded is not None:
         # ПРОВЕРКА 2: Количество строк должно совпадать с количеством комбинаций
         n_combinations = len(option_sets)
         
-        st.write(f"**Проверка:**")
-        st.write(f"- Строк в файле: {df.shape[0]}")
-        st.write(f"- Ожидается строк (комбинаций): {n_combinations}")
-        
         if df.shape[0] != n_combinations:
             st.error(f"Ошибка: Количество строк в файле ({df.shape[0]}) должно совпадать с количеством комбинаций ({n_combinations})")
         else:
@@ -458,16 +453,16 @@ if st.button("Очистить всё", type="secondary"):
         deleted_scores = delete_all_scores()
         deleted_combinations = delete_all_combinations()
         
-        # Очищаем критерии (оставляем только "Score" по умолчанию)
-        st.session_state.criteria = ["Score"]
+        # Очищаем критерии (оставляем только "IPC" по умолчанию)
+        st.session_state.criteria = ["IPC"]
         
         # Сбрасываем настройки критериев
         st.session_state.criteria_settings = {
-            "Score": {"rank_type": "descending", "alpha": 0.05}
+            "IPC": {"rank_type": "descending", "alpha": 0.05}
         }
         
-        # Очищаем результаты в session_state (только Score с нулевыми значениями)
-        st.session_state.results = {"Score": {}}
+        # Очищаем результаты в session_state (только IPC с нулевыми значениями)
+        st.session_state.results = {"IPC": {}}
         
         # Увеличиваем ключ для сброса загрузчика файла
         st.session_state.uploader_key_results += 1
